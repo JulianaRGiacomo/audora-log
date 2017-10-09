@@ -7,9 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Controller
 @RequestMapping(path="/api/log")
@@ -20,15 +18,54 @@ public class LogController {
 
     @RequestMapping(method = RequestMethod.GET)
     public @ResponseBody
-    ResponseEntity getLogs() {
+    ResponseEntity getLogs(@RequestParam (value = "produto", defaultValue = "") String produto,
+                           @RequestParam (value = "cliente", defaultValue = "") String cliente,
+                           @RequestParam (value = "categoria", defaultValue = "") String categoria,
+                           @RequestParam (value = "dataInicial", defaultValue = "") String tempDataInicial,
+                           @RequestParam (value = "dataFinal", defaultValue = "") String tempDataFinal) {
         Iterable<Log> logs;
         List<Map<String, Object>> json = new ArrayList<>();
-        logs = logRepository.findAll();
 
-        for(Log log : logs){
-            json.add(log.getJson());
-        }
-        return ResponseEntity.ok(json);
+//        boolean valido= false, datas = false;
+//        LocalDateTime dataInicial, dataFinal;
+//
+//        Map<String, Object> map = new HashMap<String, Object>();
+//
+//        if(!produto.equals("")) {
+//            map.put("produto", produto);
+//            valido = true;
+//        }
+//        if(!cliente.equals("")) {
+//            map.put("cliente", cliente);
+//            valido = true;
+//        }
+//        if(!categoria.equals("")) {
+//            map.put("categoria", categoria);
+//            valido = true;
+//        }
+//        if(!tempDataInicial.equals("") && !tempDataFinal.equals("")) {
+//            dataInicial = Log.formatarPrazo(tempDataInicial);
+//            dataFinal = Log.formatarPrazo(tempDataFinal);
+//            if(dataFinal == null && dataInicial == null)
+//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datas inválidas");
+//            datas = true;
+//        }
+//
+//        if(valido) {
+//            if(datas){
+//                logs = logRepository.
+//            }
+//        }
+//        else {
+            logs = logRepository.findAll();
+
+            for(Log log : logs){
+                json.add(log.getJson());
+            }
+            return ResponseEntity.ok(json);
+//        }
+
+
     }
 
     @RequestMapping(method = RequestMethod.POST)
