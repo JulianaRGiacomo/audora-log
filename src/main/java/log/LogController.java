@@ -46,48 +46,24 @@ public class LogController {
         }
         all = !produto.equals("") && !cliente.equals("") && !categoria.equals("");
 
-        if(produto.equals("") && cliente.equals("") && categoria.equals("") && !datas) {
-            logs = logRepository.findAll();
-        } else if(datas && all) {
-            logs = logRepository.findByDataHoraBetweenAndClienteAndCategoriaAndProduto(dataInicial, dataFinal,
-                    cliente, categoria, produto);
-        } else if(!datas) {
-            if(all)
-                logs = logRepository.findByClienteAndCategoriaAndProduto(cliente, categoria, produto);
-            else {
-                if(!produto.equals("") && !cliente.equals(""))
-                    logs = logRepository.findByProdutoAndCliente(produto, cliente);
-                else if(!produto.equals("") && !categoria.equals(""))
-                    logs = logRepository.findByProdutoAndCategoria(produto, categoria);
-                else if(!cliente.equals("") && !categoria.equals(""))
-                    logs = logRepository.findByClienteAndCategoria(cliente, categoria);
-                else if(!produto.equals(""))
-                    logs = logRepository.findByProduto(produto);
-                else if(!categoria.equals(""))
-                    logs = logRepository.findByCategoria(categoria);
-                else
-                    logs = logRepository.findByCliente(cliente);
-            }
+        Map<String, String> map = new HashMap<String, String>();
 
+        if(!produto.equals(""))
+            map.put("produto",produto);
+        if(!cliente.equals(""))
+            map.put("cliente",cliente);
+        if(!categoria.equals(""))
+            map.put("categoria",categoria);
+
+        if(map.isEmpty() && !datas) {
+            logs = logRepository.findAll();
+        } else if(!datas) {
+            logs = logRepository.findByMultipleParameters(map);
         }  else {
-            if(produto.equals("") && cliente.equals("") && categoria.equals(""))
+            if(map.isEmpty())
                 logs = logRepository.findByDataHoraBetween(dataInicial, dataFinal);
             else {
-                if(!produto.equals("") && !cliente.equals(""))
-                    logs = logRepository.findByDataHoraBetweenAndProdutoAndCliente(dataInicial, dataFinal,
-                            produto, cliente);
-                else if(!produto.equals("") && !categoria.equals(""))
-                    logs = logRepository.findByDataHoraBetweenAndProdutoAndCategoria(dataInicial, dataFinal,
-                            produto, categoria);
-                else if(!cliente.equals("") && !categoria.equals(""))
-                    logs = logRepository.findByDataHoraBetweenAndClienteAndCategoria(dataInicial, dataFinal,
-                            cliente, categoria);
-                else if(!produto.equals(""))
-                    logs = logRepository.findByDataHoraBetweenAndProduto(dataInicial, dataFinal, produto);
-                else if(!categoria.equals(""))
-                    logs = logRepository.findByDataHoraBetweenAndCategoria(dataInicial, dataFinal, categoria);
-                else
-                    logs = logRepository.findByDataHoraBetweenAndCliente(dataInicial, dataFinal, cliente);
+                logs = logRepository.findByMultipleParametersAndDates(map,dataInicial,dataFinal);
             }
         }
 
