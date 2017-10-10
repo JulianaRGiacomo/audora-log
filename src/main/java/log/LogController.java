@@ -23,49 +23,72 @@ public class LogController {
                            @RequestParam (value = "categoria", defaultValue = "") String categoria,
                            @RequestParam (value = "dataInicial", defaultValue = "") String tempDataInicial,
                            @RequestParam (value = "dataFinal", defaultValue = "") String tempDataFinal) {
-        Iterable<Log> logs;
+        Iterable<Log> logs; //= new ArrayList<>();
         List<Map<String, Object>> json = new ArrayList<>();
 
-//        boolean valido= false, datas = false;
-//        LocalDateTime dataInicial, dataFinal;
-//
-//        Map<String, Object> map = new HashMap<String, Object>();
-//
-//        if(!produto.equals("")) {
-//            map.put("produto", produto);
-//            valido = true;
-//        }
-//        if(!cliente.equals("")) {
-//            map.put("cliente", cliente);
-//            valido = true;
-//        }
-//        if(!categoria.equals("")) {
-//            map.put("categoria", categoria);
-//            valido = true;
-//        }
-//        if(!tempDataInicial.equals("") && !tempDataFinal.equals("")) {
-//            dataInicial = Log.formatarPrazo(tempDataInicial);
-//            dataFinal = Log.formatarPrazo(tempDataFinal);
-//            if(dataFinal == null && dataInicial == null)
-//                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Datas inválidas");
-//            datas = true;
-//        }
-//
-//        if(valido) {
-//            if(datas){
-//                logs = logRepository.
-//            }
-//        }
-//        else {
+        boolean datas = false, all = false;
+        LocalDateTime dataInicial = null, dataFinal = null;
+
+        if(!tempDataInicial.equals("") && !tempDataFinal.equals("")) {
+            dataInicial = Log.formatarPrazo(tempDataInicial);
+            dataFinal = Log.formatarPrazo(tempDataFinal);
+            if (dataFinal == null && dataInicial == null)
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Formato das datas inválidas");
+
+            datas = true;
+        }
+        all = !produto.equals("") && !cliente.equals("") && !categoria.equals("");
+
+        if(produto.equals("") && cliente.equals("") && categoria.equals("") && !datas) {
             logs = logRepository.findAll();
-
-            for(Log log : logs){
-                json.add(log.getJson());
+        } else if(datas && all) {
+            logs = logRepository.findByDataHoraBetweenAndClienteAndCategoriaAndProduto(dataInicial, dataFinal,
+                    cliente, categoria, produto);
+        } else if(!datas) {
+            if(all)
+                logs = logRepository.findByClienteAndCategoriaAndProduto(cliente, categoria, produto);
+            else {
+                if(!produto.equals("") && !cliente.equals(""))
+                    logs = logRepository.findByProdutoAndCliente(produto, cliente);
+                else if(!produto.equals("") && !categoria.equals(""))
+                    logs = logRepository.findByProdutoAndCategoria(produto, categoria);
+                else if(!cliente.equals("") && !categoria.equals(""))
+                    logs = logRepository.findByClienteAndCategoria(cliente, categoria);
+                else if(!produto.equals(""))
+                    logs = logRepository.findByProduto(produto);
+                else if(!categoria.equals(""))
+                    logs = logRepository.findByCategoria(categoria);
+                else
+                    logs = logRepository.findByCliente(cliente);
             }
-            return ResponseEntity.ok(json);
-//        }
 
+        }  else {
+            if(produto.equals("") && cliente.equals("") && categoria.equals(""))
+                logs = logRepository.findByDataHoraBetween(dataInicial, dataFinal);
+            else {
+                if(!produto.equals("") && !cliente.equals(""))
+                    logs = logRepository.findByDataHoraBetweenAndProdutoAndCliente(dataInicial, dataFinal,
+                            produto, cliente);
+                else if(!produto.equals("") && !categoria.equals(""))
+                    logs = logRepository.findByDataHoraBetweenAndProdutoAndCategoria(dataInicial, dataFinal,
+                            produto, categoria);
+                else if(!cliente.equals("") && !categoria.equals(""))
+                    logs = logRepository.findByDataHoraBetweenAndClienteAndCategoria(dataInicial, dataFinal,
+                            cliente, categoria);
+                else if(!produto.equals(""))
+                    logs = logRepository.findByDataHoraBetweenAndProduto(dataInicial, dataFinal, produto);
+                else if(!categoria.equals(""))
+                    logs = logRepository.findByDataHoraBetweenAndCategoria(dataInicial, dataFinal, categoria);
+                else
+                    logs = logRepository.findByDataHoraBetweenAndCliente(dataInicial, dataFinal, cliente);
+            }
+        }
 
+        for(Log log : logs){
+            json.add(log.getJson());
+        }
+
+        return ResponseEntity.ok(json);
     }
 
     @RequestMapping(method = RequestMethod.POST)
