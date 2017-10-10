@@ -31,5 +31,7 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-web")
     compile 'org.springframework.boot:spring-boot-starter-data-jpa'
     compile 'mysql:mysql-connector-java'
+    compile("org.springframework.boot:spring-boot-starter-security")
+    compile group: 'io.jsonwebtoken', name: 'jjwt', version: '0.7.0'
 }
 
