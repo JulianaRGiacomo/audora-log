@@ -25,10 +25,12 @@ public class LogController {
                            @RequestParam (value = "dataFinal", defaultValue = "") String tempDataFinal,
                            @RequestParam (value = "horaInicial", defaultValue = "") String tempHoraInicial,
                            @RequestParam (value = "horaFinal", defaultValue = "") String tempHoraFinal) {
+
         Iterable<Log> logs;
         List<Map<String, Object>> json = new ArrayList<>();
+        Map<String, String> map = new HashMap<String, String>();
 
-        boolean datas = false, all;
+        boolean datas = false;
         LocalDateTime dataInicial = null, dataFinal = null;
 
         tempDataInicial = tempDataInicial.equals("") || tempHoraInicial.equals("") ?
@@ -44,9 +46,6 @@ public class LogController {
 
             datas = true;
         }
-        all = !produto.equals("") && !cliente.equals("") && !categoria.equals("");
-
-        Map<String, String> map = new HashMap<String, String>();
 
         if(!produto.equals(""))
             map.put("produto",produto);
