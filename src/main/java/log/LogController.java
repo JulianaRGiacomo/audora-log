@@ -22,12 +22,19 @@ public class LogController {
                            @RequestParam (value = "cliente", defaultValue = "") String cliente,
                            @RequestParam (value = "categoria", defaultValue = "") String categoria,
                            @RequestParam (value = "dataInicial", defaultValue = "") String tempDataInicial,
-                           @RequestParam (value = "dataFinal", defaultValue = "") String tempDataFinal) {
-        Iterable<Log> logs; //= new ArrayList<>();
+                           @RequestParam (value = "dataFinal", defaultValue = "") String tempDataFinal,
+                           @RequestParam (value = "horaInicial", defaultValue = "") String tempHoraInicial,
+                           @RequestParam (value = "horaFinal", defaultValue = "") String tempHoraFinal) {
+        Iterable<Log> logs;
         List<Map<String, Object>> json = new ArrayList<>();
 
-        boolean datas = false, all = false;
+        boolean datas = false, all;
         LocalDateTime dataInicial = null, dataFinal = null;
+
+        tempDataInicial = tempDataInicial.equals("") || tempHoraInicial.equals("") ?
+                "" : tempDataInicial + tempHoraInicial;
+        tempDataFinal = tempDataFinal.equals("") || tempHoraFinal.equals("")?
+                "" : tempDataFinal + tempHoraFinal;
 
         if(!tempDataInicial.equals("") && !tempDataFinal.equals("")) {
             dataInicial = Log.formatarPrazo(tempDataInicial);
